@@ -1,0 +1,42 @@
+{
+  "feature_names": [
+    "ear_mean",
+    "ear_std",
+    "ear_min",
+    "ear_max",
+    "blink_rate",
+    "mean_blink_duration",
+    "max_blink_duration",
+    "perclos",
+    "mar_mean",
+    "mar_std",
+    "mar_max",
+    "yawn_rate",
+    "mean_yawn_duration",
+    "yawn_duration_ratio",
+    "pitch_mean",
+    "pitch_std",
+    "pitch_min",
+    "pitch_max",
+    "yaw_mean",
+    "yaw_std",
+    "roll_mean",
+    "roll_std",
+    "nod_count",
+    "nod_rate",
+    "brow_dist_mean",
+    "brow_dist_std",
+    "brow_dist_min",
+    "brow_movement_energy"
+  ],
+  "test_scores": {
+    "Ensemble": 0.9903536977491961,
+    "Random Forest": 0.9742765273311897,
+    "XGBoost": 0.9871382636655949,
+    "MLP": 0.9742765273311897
+  },
+  "test_size": 0.2,
+  "num_train_samples": 1244,
+  "num_test_samples": 311,
+  "random_state": 42
+}

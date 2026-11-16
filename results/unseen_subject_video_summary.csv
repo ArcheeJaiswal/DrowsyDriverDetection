@@ -1,0 +1,5 @@
+model,accuracy,f1_macro
+MLP,0.7833,0.7810
+Random Forest,0.8000,0.7980
+XGBoost,0.8333,0.8310
+Soft-Voting Ensemble,0.8833,0.8815

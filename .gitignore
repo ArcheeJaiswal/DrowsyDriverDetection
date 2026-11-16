@@ -1,0 +1,24 @@
+# Environments & Python cache
+venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+*.egg-info/
+.DS_Store
+
+# Large datasets & raw media files
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/synthetic/*
+!data/synthetic/.gitkeep
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.zip
+*.tar.gz
