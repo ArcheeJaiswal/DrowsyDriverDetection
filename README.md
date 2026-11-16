@@ -6,7 +6,6 @@
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.6.1-F7931E.svg?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 [![XGBoost](https://img.shields.io/badge/XGBoost-2.1.4-red.svg)](https://xgboost.readthedocs.io/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.50-FF4B4B.svg?logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A real-time, contactless computer vision and machine learning system that classifies driver state into **3 physiological levels**: **Alert**, **Low Vigilant**, and **Drowsy**. 
 
@@ -27,40 +26,40 @@ Instead of traditional binary detectors that only trigger after eyes close, this
 ## 🏗️ System Architecture
 
 ```
-                                  [ Video Input / Webcam ]
-                                             │
-                                             ▼
-                             [ MediaPipe Face Mesh (468 LMs) ]
-                                             │
-             ┌───────────────────────┬───────┴───────────────┬───────────────────────┐
-             ▼                       ▼                       ▼                       ▼
-      [ Eye Dynamics ]       [ Mouth Dynamics ]      [ 3D Head Pose ]       [ Eyebrow Dynamics ]
-       • EAR (6-pt)           • MAR (8-pt)            • solvePnP PnP         • Inter-ocular Norm
-       • PERCLOS (P80)        • Yawn Dur / Rate       • Pitch, Yaw, Roll     • Muscle Energy
-       • Blink Rate / Dur                             • Micro-sleep Nods
-             │                       │                       │                       │
-             └───────────────────────┼───────────────────────┴───────────────────────┘
-                                     ▼
-                     [ Adaptive Per-Subject Calibration ]
-                     (Normalizes individual facial baseline)
-                                     │
-                                     ▼
-                  [ 28-D Temporal Hybrid Feature Vector ]
-                                     │
-                                     ▼
-                ┌────────────────────┼────────────────────┐
-                ▼                    ▼                    ▼
-        [ Random Forest ]      [ XGBoost ]             [ MLP ]
-          (150 trees)         (Grad Boosted)       (128x64 Dense)
-                │                    │                    │
-                └────────────────────┼────────────────────┘
-                                     ▼
-                     [ Soft-Voting Ensemble Aggregator ]
-                                     │
-                                     ▼
-             ┌───────────────────────┼───────────────────────┐
-             ▼                       ▼                       ▼
-      [ Level 0: Alert ]   [ Level 1: Low-Vigilant ]  [ Level 2: Drowsy ]
+                                      [ Video Input / Webcam ]
+                                                 │
+                                                 ▼
+                                 [ MediaPipe Face Mesh (468 LMs) ]
+                                                 │
+             ┌───────────────────────────┬───────┴───────────────┬───────────────────────────┐
+             ▼                           ▼                       ▼                           ▼
+      [ Eye Dynamics ]           [ Mouth Dynamics ]      [ 3D Head Pose ]           [ Eyebrow Dynamics ]
+       • EAR (6-pt)               • MAR (8-pt)            • solvePnP PnP             • Inter-ocular Norm
+       • PERCLOS (P80)            • Yawn Dur / Rate       • Pitch, Yaw, Roll         • Muscle Energy
+       • Blink Rate / Dur                                 • Micro-sleep Nods
+             │                           │                       │                           │
+             └───────────────────────────┴───────┬───────────────┴───────────────────────────┘
+                                                 ▼
+                                [ Adaptive Baseline Calibration ]
+                              (Normalizes individual facial baseline)
+                                                 │
+                                                 ▼
+                              [ 28-D Temporal Hybrid Feature Vector ]
+                                                 │
+                                                 ▼
+                   ┌─────────────────────────────┼─────────────────────────────┐
+                   ▼                             ▼                             ▼
+           [ Random Forest ]                [ XGBoost ]                     [ MLP ]
+              (150 trees)                  (Grad Boosted)               (128x64 Dense)
+                   │                             │                             │
+                   └─────────────────────────────┼─────────────────────────────┘
+                                                 ▼
+                                [ Soft-Voting Ensemble Aggregator ]
+                                                 │
+                                                 ▼
+             ┌───────────────────────────────────┼───────────────────────────────────┐
+             ▼                                   ▼                                   ▼
+      [ Level 0: Alert ]               [ Level 1: Low-Vigilant ]              [ Level 2: Drowsy ]
 ```
 
 ---
@@ -78,8 +77,8 @@ Evaluated on the benchmark **UTA-RLDD** dataset against published literature und
 | **🏆 Hybrid Soft-Voting Ensemble (Ours)** | **Yes** | **Yes** | **Yes** | **86.90%+** |
 
 <p align="center">
-  <img src="results/confusion_matrix_seen.png" width="48%" alt="Confusion Matrix" />
-  <img src="results/ablation_study.png" width="48%" alt="Ablation Study Chart" />
+  <img src="results/confusion_matrix_seen.png" width="48%" alt="Seen-Subject Confusion Matrix" />
+  <img src="results/ablation_study.png" width="48%" alt="Feature Group Ablation Chart" />
 </p>
 
 ---
@@ -119,33 +118,7 @@ python -m unittest tests/test_pipeline.py # Automated unit test suite
 
 ---
 
-## 📁 Repository Structure
-
-```
-DrowsyDriverDetection/
-├── app/
-│   ├── realtime_detector.py        # Live webcam monitor with audio-visual HUD
-│   └── streamlit_app.py            # Streamlit dashboard & simulator
-├── data/
-│   ├── features/                   # Extracted feature CSVs
-│   └── raw/                        # Video clips (UTA-RLDD dataset)
-├── notebooks/                      # Jupyter walkthrough notebook
-├── results/                        # Confusion matrices & evaluation plots
-├── saved_models/                   # Serialized ensemble model (.joblib)
-├── src/
-│   ├── features/                   # EAR, MAR, head pose, eyebrow extraction
-│   ├── models/                     # RF, XGBoost, MLP, and Soft-Voting Ensemble
-│   ├── preprocessing/              # MediaPipe landmark extraction
-│   └── evaluation/                 # Metrics, cross-validation, and ablation
-├── tests/                          # Automated unit test suite
-├── extract_features.py             # Feature extraction pipeline
-├── main.py                         # Master training & evaluation CLI
-└── requirements.txt                # Dependencies
-```
-
----
-
-## 🔮 Suggested Improvements
+## 🔮 Future Improvements
 
 - **Sequential Temporal Models**: Adding an LSTM/GRU layer over sliding windows for continuous driving fatigue progression.
 - **Night-Vision IR Support**: Adapting facial landmark detection for low-light automotive cabins.
